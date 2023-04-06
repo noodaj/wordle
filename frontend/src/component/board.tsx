@@ -3,44 +3,25 @@ import { BoardContext } from "../App";
 import { Cell } from "./cell";
 
 export const Board: FC = () => {
-	const { board, setBoard } = useContext(BoardContext);
+	const { board } = useContext(BoardContext);
+
+	let rowIndex = 0,
+		colIndex = 0;
+
+	const boardItem = board.map((row) => {
+		rowIndex += 1;
+		return (
+			<div className="flex my-1" key={rowIndex}>
+				{row.map((letter) => {
+					colIndex += 1;
+					return <Cell key={colIndex} letter={letter}></Cell>;
+				})}
+			</div>
+		);
+	});
 	return (
-		<div className="flex flex-col items-center justify-center mt-20">
-			<div className="flex">
-				<Cell col={1} row={1}></Cell>
-				<Cell col={1} row={2}></Cell>
-				<Cell col={1} row={3}></Cell>
-				<Cell col={1} row={4}></Cell>
-				<Cell col={1} row={5}></Cell>
-			</div>
-			<div className="flex">
-				<Cell col={2} row={1}></Cell>
-				<Cell col={2} row={2}></Cell>
-				<Cell col={2} row={3}></Cell>
-				<Cell col={2} row={4}></Cell>
-				<Cell col={2} row={5}></Cell>
-			</div>
-			<div className="flex">
-				<Cell col={3} row={1}></Cell>
-				<Cell col={3} row={2}></Cell>
-				<Cell col={3} row={3}></Cell>
-				<Cell col={3} row={4}></Cell>
-				<Cell col={3} row={5}></Cell>
-			</div>
-			<div className="flex">
-				<Cell col={4} row={1}></Cell>
-				<Cell col={4} row={2}></Cell>
-				<Cell col={4} row={3}></Cell>
-				<Cell col={4} row={4}></Cell>
-				<Cell col={4} row={5}></Cell>
-			</div>
-			<div className="flex">
-				<Cell col={5} row={1}></Cell>
-				<Cell col={5} row={2}></Cell>
-				<Cell col={5} row={3}></Cell>
-				<Cell col={5} row={4}></Cell>
-				<Cell col={5} row={5}></Cell>
-			</div>
+		<div className="flex flex-col items-center justify-center mt-10">
+			{boardItem}
 		</div>
 	);
 };

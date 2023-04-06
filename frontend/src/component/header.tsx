@@ -14,7 +14,14 @@ export const Header: FC = () => {
 				<GiHamburgerMenu></GiHamburgerMenu>
 				<div className="ml-16">Wordle</div>
 				<div className="flex gap-x-2">
-					<> {infoState && <InfoModal modalState={infoState} setModal= {setInfoState}></InfoModal>}</>
+					<>
+						{infoState && (
+							<InfoModal
+								modalState={infoState}
+								setModal={setInfoState}
+							></InfoModal>
+						)}
+					</>
 					<AiOutlineQuestionCircle
 						className="hover:cursor-pointer"
 						onClick={() => {
@@ -25,7 +32,7 @@ export const Header: FC = () => {
 					<IoSettingsSharp className="hover:cursor-pointer"></IoSettingsSharp>
 				</div>
 			</div>
-			<hr className="min-w-max">test</hr>
+      <hr></hr>
 		</>
 	);
 };
