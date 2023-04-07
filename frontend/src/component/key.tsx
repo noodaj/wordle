@@ -1,4 +1,4 @@
-import React, { FC, useContext } from "react";
+import { FC, useContext } from "react";
 import { BoardContext } from "../App";
 
 interface KeyProp {
@@ -7,14 +7,21 @@ interface KeyProp {
 }
 
 export const Key: FC<KeyProp> = ({ letter, nonLetter }) => {
-	const { board, index, setBoard, setIndex } = useContext(BoardContext);
+	const { board, index, setBoard, setIndex, setGuess } =
+		useContext(BoardContext);
 	const setLetter = () => {
+		let temp = [...board];
 		if (letter === "Enter") {
 			if (index.col != 5) return;
-			setIndex({ ...index, row: index.row + 1 });
+			setGuess(board[index.row].join(""));
+			setIndex({ row: index.row + 1, col: 0 });
+		} else if (letter === "Back") {
+			if (index.col < 0 || index.col > 5) return;
+			temp[index.row][index.col - 1] = "";
+			setBoard(temp);
+			setIndex({ ...index, col: index.col > 0 ? index.col - 1 : 0 });
 		} else {
 			if (index.col > 4) return;
-			let temp = [...board];
 			temp[index.row][index.col] = letter;
 			setBoard(temp);
 			setIndex({ ...index, col: index.col + 1 });
