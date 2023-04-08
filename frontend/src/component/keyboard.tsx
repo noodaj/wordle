@@ -4,10 +4,12 @@ import { Key } from "./key";
 interface KeyboardProps {}
 
 let createRow = (row: string[]) => {
+	let c = 0;
 	return row.map((letter) => {
+		c += 1
 		return (
 			<div className="flex flex-col" key={Math.random() * 50}>
-				<Key letter={letter} nonLetter={false}></Key>
+				<Key letter={letter} nonLetter={false} c={c-1} ></Key>
 			</div>
 		);
 	});
@@ -27,9 +29,9 @@ export const Keyboard: FC<KeyboardProps> = () => {
 			<div className="flex">{item1}</div>
 			<div className="flex">{item2}</div>
 			<div className="flex">
-				<Key letter="Enter" nonLetter={true}></Key>
+				<Key letter="Enter" nonLetter={true} c={-1}></Key>
 				{item3}
-				<Key letter="Back" nonLetter={true}></Key>
+				<Key letter="Back" nonLetter={true} c={-1}></Key>
 			</div>
 		</div>
 	);

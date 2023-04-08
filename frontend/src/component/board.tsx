@@ -14,7 +14,14 @@ export const Board: FC = () => {
 			<div className="flex my-1" key={rowIndex}>
 				{row.map((letter) => {
 					colIndex += 1;
-					return <Cell key={colIndex} letter={letter}></Cell>;
+					return (
+						<Cell
+							key={colIndex}
+							letter={letter}
+							r={rowIndex - 1}
+							c={colIndex - 1}
+						></Cell>
+					);
 				})}
 			</div>
 		);
