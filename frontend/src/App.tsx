@@ -30,13 +30,19 @@ export const BoardContext = createContext<AppContext>({
 });
 
 function App() {
-	const actualWord = "PIGGY";
+	const actualWord = "POGER";
 	const [board, setBoard] = useState(boardGrid);
 	const [index, setIndex] = useState<curGuess>({
 		row: 0,
 		col: 0,
 	});
 	const [curGuess, setGuess] = useState<string>("");
+
+	if (curGuess == actualWord) {
+		setIndex({ col: 6, row: 4 });
+		setGuess("")
+	}
+
 	return (
 		<div className="App min-h-screen bg-[#0e0f10] text-white py-3 font-sans">
 			<Header></Header>
