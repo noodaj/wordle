@@ -3,6 +3,7 @@ import { Header } from "./component/header";
 import { createContext, useState, Dispatch } from "react";
 import { boardGrid } from "./board";
 import { Keyboard } from "./component/keyboard";
+import { Endscreen } from "./component/endscreen";
 
 type curGuess = {
 	row: number;
@@ -36,11 +37,13 @@ function App() {
 		row: 0,
 		col: 0,
 	});
+	const [win, setWin] = useState<boolean>(false);
 	const [curGuess, setGuess] = useState<string>("");
 
 	if (curGuess == actualWord) {
 		setIndex({ col: 6, row: 4 });
-		setGuess("")
+		setGuess("");
+		setWin(true);
 	}
 
 	return (
@@ -59,6 +62,7 @@ function App() {
 			>
 				<Board></Board>
 				<Keyboard></Keyboard>
+				{(win || index.row == 6) && <Endscreen></Endscreen>}
 			</BoardContext.Provider>
 		</div>
 	);
