@@ -10,6 +10,7 @@ export const Board: FC = () => {
 
 	const boardItem = board.map((row) => {
 		rowIndex += 1;
+		colIndex = 0;
 		return (
 			<div className="flex my-1" key={rowIndex}>
 				{row.map((letter) => {
