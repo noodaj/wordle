@@ -16,3 +16,7 @@ export interface IUserData {
 	winPercent: number;
 	played: number;
 }
+
+export interface word {
+	word: string;
+}
