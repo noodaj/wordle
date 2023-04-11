@@ -1,9 +1,12 @@
+import axios from "axios";
+import { createContext, useState, Dispatch, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import { Board } from "./component/board";
 import { Header } from "./component/header";
-import { createContext, useState, Dispatch } from "react";
 import { boardGrid } from "./board";
 import { Keyboard } from "./component/keyboard";
-import { Endscreen } from "./component/endscreen";
+import { StatCard } from "./component/statsCard";
+import { Login } from "./component/login";
 
 type curGuess = {
 	row: number;
@@ -31,24 +34,39 @@ export const BoardContext = createContext<AppContext>({
 });
 
 function App() {
-	const actualWord = "POGER";
+	const [actualWord, setWord] = useState<string>(" ");
 	const [board, setBoard] = useState(boardGrid);
 	const [index, setIndex] = useState<curGuess>({
 		row: 0,
 		col: 0,
 	});
-	const [win, setWin] = useState<boolean>(false);
+	const [stats, showStats] = useState<boolean>(false);
+	const [login, setLogin] = useState<boolean>(false);
 	const [curGuess, setGuess] = useState<string>("");
 
-	if (curGuess == actualWord) {
+	useEffect(() => {
+		const getDaily = async () => {
+			const res = await axios.get("http://localhost:5000/words");
+			setWord(res.data.daily);
+		};
+
+		getDaily();
+	}, []);
+
+	if (curGuess == actualWord || index.row == 6) {
 		setIndex({ col: 6, row: 4 });
 		setGuess("");
-		setWin(true);
+		showStats(true);
 	}
 
 	return (
 		<div className="App min-h-screen bg-[#0e0f10] text-white py-3 font-sans">
-			<Header></Header>
+			<Header
+				stats={stats}
+				showStats={showStats}
+				login={login}
+				showLogin={setLogin}
+			></Header>
 			<BoardContext.Provider
 				value={{
 					board,
@@ -62,7 +80,20 @@ function App() {
 			>
 				<Board></Board>
 				<Keyboard></Keyboard>
-				{(win || index.row == 6) && <Endscreen></Endscreen>}
+				{stats && (
+					<StatCard
+						curStreak={1}
+						guessCount={0}
+						maxStreak={1}
+						played={5}
+						wins={0}
+						stats
+						showStats={showStats}
+						login={login}
+						showLogin={setLogin}
+					></StatCard>
+				)}
+				{login && <Login login={login} showLogin={setLogin}></Login>}
 			</BoardContext.Provider>
 		</div>
 	);
