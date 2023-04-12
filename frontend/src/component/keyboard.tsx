@@ -6,10 +6,10 @@ interface KeyboardProps {}
 let createRow = (row: string[]) => {
 	let c = 0;
 	return row.map((letter) => {
-		c += 1
+		c += 1;
 		return (
 			<div className="flex flex-col" key={Math.random() * 50}>
-				<Key letter={letter} nonLetter={false} c={c-1} ></Key>
+				<Key letter={letter} nonLetter={false} color={"bg-[#818384]"}></Key>
 			</div>
 		);
 	});
@@ -29,10 +29,25 @@ export const Keyboard: FC<KeyboardProps> = () => {
 			<div className="flex">{item1}</div>
 			<div className="flex">{item2}</div>
 			<div className="flex">
-				<Key letter="Enter" nonLetter={true} c={-1}></Key>
+				<Key letter="Enter" nonLetter={true} color={"bg-[#818384]"}></Key>
 				{item3}
-				<Key letter="Back" nonLetter={true} c={-1}></Key>
+				<Key letter="Back" nonLetter={true} color={"bg-[#818384]"}></Key>
 			</div>
 		</div>
 	);
 };
+
+/**
+ 	if (index.row > 0) {
+		for (let i = 0; i < 5; i++) {
+			const correct =
+				curGuess != "" &&
+				curGuess[i] === actualWord[i] &&
+				curGuess[i] == letter;
+			console.log(letter, correct, curGuess[i], actualWord[i]);
+			if (correct) {
+				setColor("bg-[#538D4E]");
+			}
+		}
+	}
+ */
