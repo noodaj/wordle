@@ -12,20 +12,14 @@ router.get("/", (req: Request, res: Response) => {
 router.post("/checkWord", (req: Request, res: Response) => {
 	const { word } = req.body as word;
 	const wordSet: Set<string> = req.app.locals.words;
-	const validWord = req.app.locals.dailyWord;
 
+	console.log(word);
 	if (!wordSet.has(word)) {
 		console.log("invalid word");
-		return res.status(400).send({ error: "Invalid word" });
+		return res.status(400).json({ error: "Invalid word" });
 	}
 
-	if (word === validWord) {
-		console.log("correct word");
-		return res.status(200).send({ message: "Correct guess" });
-	}
-
-	console.log("wrong word");
-	return res.status(200).send({ error: "Wrong word" });
+	return res.status(200).json({});
 });
 
 export { router as wordRouter };
