@@ -1,23 +1,26 @@
 import React, { FC } from "react";
 import { IoIosStats, IoMdClose } from "react-icons/io";
 
-interface StatProps {
-	guessCount: number; //should be number array
-	played: number;
-	wins: number;
+interface userStats {
 	curStreak: number;
 	maxStreak: number;
+	wins: number;
+	played: number;
+	winPercent: number;
+}
+
+interface StatProps {
+	guessCount: number; 
+	userStats: userStats;
 	stats: boolean;
 	showStats: React.Dispatch<React.SetStateAction<boolean>>;
 	login: boolean;
 	showLogin: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
 export const StatCard: FC<StatProps> = ({
 	guessCount,
-	curStreak,
-	maxStreak,
-	played,
-	wins,
+	userStats,
 	showStats,
 	stats,
 	login,
@@ -39,21 +42,21 @@ export const StatCard: FC<StatProps> = ({
 
 					<div className="flex gap-10 justify-around mb-3">
 						<div className="flex flex-col items-center">
-							<p className="text-4xl font-bold">{played}</p>
+							<p className="text-4xl font-bold">{userStats.played}</p>
 							<p className="text-xs font-semibold">Played</p>
 						</div>
 						<div className="flex flex-col items-center">
-							<p className="text-4xl font-bold">{wins}</p>
+							<p className="text-4xl font-bold">{userStats.winPercent}</p>
 							<p className="text-xs font-semibold">Win %</p>
 						</div>
 						<div className="flex flex-col items-center">
-							<p className="text-4xl font-bold">{curStreak}</p>
+							<p className="text-4xl font-bold">{userStats.curStreak}</p>
 							<p className="text-xs font-semibold">
 								Current Streak
 							</p>
 						</div>
 						<div className="flex flex-col items-center">
-							<p className="text-4xl font-bold">{maxStreak}</p>
+							<p className="text-4xl font-bold">{userStats.maxStreak}</p>
 							<p className="text-xs font-semibold">Max Streak</p>
 						</div>
 					</div>
