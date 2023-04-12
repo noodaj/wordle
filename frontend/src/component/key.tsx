@@ -20,6 +20,12 @@ export const Key: FC<KeyProp> = ({ letter, nonLetter, color }) => {
 		setInvalid,
 	} = useContext(BoardContext);
 
+	const invalidTimer = () => {
+		setTimeout(() => {
+			setInvalid(!invalid);
+		}, 1000);
+	};
+
 	const setLetter = () => {
 		let temp = [...board];
 		if (letter === "Enter") {
@@ -27,6 +33,9 @@ export const Key: FC<KeyProp> = ({ letter, nonLetter, color }) => {
 
 			if (!checkWord(curGuess.toLowerCase())) {
 				setInvalid(!invalid);
+				setTimeout(() => {
+					setInvalid(!invalid);
+				}, 1000);
 				return;
 			}
 

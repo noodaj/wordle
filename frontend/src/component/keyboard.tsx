@@ -9,7 +9,11 @@ let createRow = (row: string[]) => {
 		c += 1;
 		return (
 			<div className="flex flex-col" key={Math.random() * 50}>
-				<Key letter={letter} nonLetter={false} color={"bg-[#818384]"}></Key>
+				<Key
+					letter={letter}
+					nonLetter={false}
+					color={"bg-[#818384]"}
+				></Key>
 			</div>
 		);
 	});
@@ -29,9 +33,17 @@ export const Keyboard: FC<KeyboardProps> = () => {
 			<div className="flex">{item1}</div>
 			<div className="flex">{item2}</div>
 			<div className="flex">
-				<Key letter="Enter" nonLetter={true} color={"bg-[#818384]"}></Key>
+				<Key
+					letter="Enter"
+					nonLetter={true}
+					color={"bg-[#818384]"}
+				></Key>
 				{item3}
-				<Key letter="Back" nonLetter={true} color={"bg-[#818384]"}></Key>
+				<Key
+					letter="Back"
+					nonLetter={true}
+					color={"bg-[#818384]"}
+				></Key>
 			</div>
 		</div>
 	);
