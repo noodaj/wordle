@@ -5,12 +5,19 @@ import { Link } from "react-router-dom";
 interface InfoProps {
 	modalState: boolean;
 	setModal: React.Dispatch<React.SetStateAction<boolean>>;
+	login: boolean;
+	showLogin: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const InfoModal: FC<InfoProps> = ({ modalState, setModal }) => {
+export const InfoModal: FC<InfoProps> = ({
+	modalState,
+	setModal,
+	login,
+	showLogin,
+}) => {
 	return (
 		<div className="absolute inset-0 flex items-center justify-center bg-black/75">
-			<div className="w-[525px] h-[675px] rounded-lg bg-[#0e0f10] mt-10">
+			<div className="w-[525px] h-[650px] rounded-lg bg-[#0e0f10]">
 				<nav>
 					<IoMdClose
 						className="float-right mr-4 mt-4 hover:cursor-pointer"
@@ -19,7 +26,7 @@ export const InfoModal: FC<InfoProps> = ({ modalState, setModal }) => {
 						}}
 					></IoMdClose>
 				</nav>
-				<div className="mx-8 mt-16 text-lg pointer-events-none">
+				<div className="mx-8 mt-16 text-lg">
 					<div className="pb-3">
 						<p className="text-2xl">How To Play</p>
 						<p className="text-lg font-semibold">
@@ -81,15 +88,20 @@ export const InfoModal: FC<InfoProps> = ({ modalState, setModal }) => {
 							</p>
 						</ul>
 						<hr></hr>
-						<div className="flex flex-row items-center py-4 text-base font-normal">
+						<div className="flex flex-row items-center py-5 text-base font-normal">
 							<IoIosStats className="h-8 w-8"></IoIosStats>
-							<p>
-								{/*<Link to={"login"}>Log in</Link> */}or create
-								an account to see your stats.
+							<p
+								className="underline hover:cursor-pointer"
+								onClick={() => {
+									showLogin(!login);
+									setModal(!modalState);
+								}}
+							>
+								Log In or create an account to see your stats.
 							</p>
 						</div>
 						<hr></hr>
-						<div className="py-4 text-base font-normal">
+						<div className="py-6 text-base font-normal">
 							A new puzzle is released daily at midnight.
 						</div>
 					</div>

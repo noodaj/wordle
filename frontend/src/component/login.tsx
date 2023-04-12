@@ -1,5 +1,18 @@
-import React from "react";
+import React, { FC } from "react";
 
-export const Login = () => {
-	return <div>test</div>;
+interface LoginProps {
+	login: boolean;
+	showLogin: React.Dispatch<React.SetStateAction<boolean>>;
+}
+export const Login: FC<LoginProps> = ({ login, showLogin }) => {
+	return (
+		<>
+			<div>test</div>
+			<button
+				onClick={() => {
+					showLogin(!login);
+				}}
+			>HIDE</button>
+		</>
+	);
 };
