@@ -6,6 +6,7 @@ export interface IUser {
 	maxStreak: number;
 	winPercent: number;
 	played: number;
+	distribution: number[];
 }
 
 export interface IUserData {

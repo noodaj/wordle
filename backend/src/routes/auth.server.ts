@@ -9,7 +9,7 @@ import { validPassword, validUsername } from "./validate.server";
 const router: Router = express.Router();
 
 router.post("/register", async (req: Request, res: Response) => {
-	const { username, password, curStreak, maxStreak, played, winPercent, wins } = req.body as IUser;
+	const { username, password, curStreak, maxStreak, played, winPercent, wins, distribution } = req.body as IUser;
 
 	//checking for valid username
 	if (validUsername(username) != undefined) {
@@ -33,11 +33,12 @@ router.post("/register", async (req: Request, res: Response) => {
 	const newUser = await createUser({
 		username,
 		password,
-		curStreak: curStreak ?? undefined,
-		maxStreak: maxStreak ?? undefined,
-		played: played ?? undefined,
-		winPercent: winPercent ?? undefined,
-		wins: wins ?? undefined,
+		curStreak,
+		maxStreak,
+		played,
+		winPercent,
+		wins,
+		distribution,
 	});
 
 	//error creating the user

@@ -9,6 +9,7 @@ const UserSchema: Schema = new Schema<IUser>({
 	maxStreak: { type: Number, default: 0 },
 	winPercent: { type: Number, default: 0 },
 	played: { type: Number, default: 0 },
+	distribution: {type: [Number], default: []}
 });
 
 const UserModel = model<IUser>("users", UserSchema);

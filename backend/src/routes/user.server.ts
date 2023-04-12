@@ -28,6 +28,7 @@ router.patch("/updateData", async (req: Request, res: Response) => {
 });
 export { router as userRouter };
 
+//create user function
 export const createUser = async ({
 	username,
 	password,
@@ -36,8 +37,14 @@ export const createUser = async ({
 	played,
 	winPercent,
 	wins,
+	distribution,
 }: IUser) => {
+
+	//hash password
 	const hashed = await bcrypt.hash(password, 10);
+
+	//wait for new user to be created
+	//might be wrong
 	const newUser: HydratedDocument<IUser> = new UserModel({
 		username,
 		password: hashed,
@@ -46,7 +53,10 @@ export const createUser = async ({
 		played,
 		winPercent,
 		wins,
+		distribution
 	});
+
+	//return the user id
 	const user = await newUser.save();
 	return { user: { id: user._id } };
 };
