@@ -1,9 +1,9 @@
 import axios from "axios";
-import { createContext, useState, Dispatch, useEffect } from "react";
+import React, { createContext, useState, Dispatch, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { Board } from "./component/board";
 import { Header } from "./component/header";
-import { boardGrid } from "./board";
+import { boardGrid, getDaily } from "./util/board";
 import { Keyboard } from "./component/keyboard";
 import { StatCard } from "./component/statsCard";
 import { Login } from "./component/login";
@@ -21,6 +21,8 @@ type AppContext = {
 	actualWord: string;
 	curGuess: string;
 	setGuess: Dispatch<React.SetStateAction<string>>;
+	invalid: boolean;
+	setInvalid: Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const BoardContext = createContext<AppContext>({
@@ -31,26 +33,22 @@ export const BoardContext = createContext<AppContext>({
 	actualWord: "",
 	curGuess: "",
 	setGuess: () => undefined,
+	invalid: false,
+	setInvalid: () => undefined,
 });
 
 function App() {
-	const [actualWord, setWord] = useState<string>(" ");
 	const [board, setBoard] = useState(boardGrid);
-	const [index, setIndex] = useState<curGuess>({
-		row: 0,
-		col: 0,
-	});
+	const [actualWord, setWord] = useState<string>(" ");
+	const [curGuess, setGuess] = useState<string>("");
 	const [stats, showStats] = useState<boolean>(false);
 	const [login, setLogin] = useState<boolean>(false);
-	const [curGuess, setGuess] = useState<string>("");
+	const [invalidWord, setInvalid] = useState<boolean>(true);
+	const [index, setIndex] = useState<curGuess>({ row: 0, col: 0 });
 
 	useEffect(() => {
-		const getDaily = async () => {
-			const res = await axios.get("http://localhost:5000/words");
-			setWord(res.data.daily);
-		};
-
-		getDaily();
+		const newDaily = getDaily();
+		setWord(newDaily.toUpperCase());
 	}, []);
 
 	if (curGuess == actualWord || index.row == 6) {
@@ -61,6 +59,7 @@ function App() {
 
 	return (
 		<div className="App min-h-screen bg-[#0e0f10] text-white py-3 font-sans">
+			{invalidWord && <div className="absolute m-0">Invalid word</div>}
 			<Header
 				stats={stats}
 				showStats={showStats}
@@ -76,6 +75,8 @@ function App() {
 					actualWord,
 					curGuess,
 					setGuess,
+					setInvalid,
+					invalid: invalidWord,
 				}}
 			>
 				<Board></Board>
