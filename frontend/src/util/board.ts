@@ -27,7 +27,10 @@ await getWords().then((res) => {
 });
 
 export const getDaily = (): string => {
-	return [...set][Math.floor(Math.random() * 5)];
+	const today = new Date();
+	const random = today.getDate() + today.getMonth() + today.getFullYear()
+	return [...set][Math.floor((random  * set.size) / random - today.getMonth() / 100)];
+	
 };
 
 export const checkWord = (word: string): boolean => {
