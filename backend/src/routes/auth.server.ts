@@ -9,7 +9,16 @@ import { validPassword, validUsername } from "./validate.server";
 const router: Router = express.Router();
 
 router.post("/register", async (req: Request, res: Response) => {
-	const { username, password, curStreak, maxStreak, played, winPercent, wins, distribution } = req.body as IUser;
+	const {
+		username,
+		password,
+		curStreak,
+		maxStreak,
+		played,
+		winPercent,
+		wins,
+		distribution,
+	} = req.body as IUser;
 
 	//checking for valid username
 	if (validUsername(username) != undefined) {
@@ -48,7 +57,11 @@ router.post("/register", async (req: Request, res: Response) => {
 			.json({ message: "There was an error creating a new user" });
 	}
 
-	return res.status(200).json(newUser);
+	//sign user that just created account
+	const token = jwt.sign({ id: newUser }, process.env.JWT_SECRET, {
+		expiresIn: "30d",
+	});
+	return res.json({ userID: newUser.user.id , token });
 });
 
 router.post("/login", async (req: Request, res: Response) => {
@@ -73,7 +86,9 @@ router.post("/login", async (req: Request, res: Response) => {
 	}
 
 	//sign jwt token
-	const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+	const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+		expiresIn: "30d",
+	});
 	res.json({ token, userID: user._id });
 });
 
