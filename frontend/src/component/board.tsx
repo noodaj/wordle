@@ -12,7 +12,7 @@ export const Board: FC = () => {
 		rowIndex += 1;
 		colIndex = 0;
 		return (
-			<div className="flex my-1" key={rowIndex}>
+			<div className="my-1 flex" key={rowIndex}>
 				{row.map((letter) => {
 					colIndex += 1;
 					return (
@@ -28,7 +28,7 @@ export const Board: FC = () => {
 		);
 	});
 	return (
-		<div className="flex flex-col items-center justify-center mt-10">
+		<div className="mt-6 flex flex-col items-center justify-center">
 			{boardItem}
 		</div>
 	);

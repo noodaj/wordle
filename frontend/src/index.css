@@ -2,7 +2,10 @@
 @tailwind components;
 
 .exampleCell {
-	@apply flex bg-[#0e0f10] w-8 h-8 pb-1 items-center justify-center text-2xl font-bold border;
+	@apply flex h-8 w-8 items-center justify-center border bg-[#0e0f10] pb-1 text-2xl font-bold;
 }
 
+.loginStyle {
+	@apply rounded-sm border-2 border-[#5E6161] bg-[#0e0f10] px-3 py-2 outline-none;
+}
 @tailwind utilities;
