@@ -1,57 +1,36 @@
-import axios from "axios";
-import React, { createContext, useState, Dispatch, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { Board } from "./component/board";
 import { Header } from "./component/header";
-import { boardGrid, getDaily } from "./util/board";
+import { boardGrid, checkWord, getDaily } from "./util/board";
 import { Keyboard } from "./component/keyboard";
 import { StatCard } from "./component/statsCard";
 import { Login } from "./component/login";
-
-interface curGuess{
-	row: number;
-	col: number;
-};
-
-interface AppContext {
-	board: string[][];
-	setBoard: Dispatch<React.SetStateAction<string[][]>>;
-	index: curGuess;
-	setIndex: Dispatch<React.SetStateAction<curGuess>>;
-	actualWord: string;
-	curGuess: string;
-	setGuess: Dispatch<React.SetStateAction<string>>;
-	invalid: boolean;
-	setInvalid: Dispatch<React.SetStateAction<boolean>>;
-}
-
-interface userStats {
-	curStreak: number;
-	maxStreak: number;
-	wins: number;
-	played: number;
-	winPercent: number;
-	distribution: number[],
-}
+import { AppContext, curGuess, currentGame, userStats } from "./util/types";
+import { InfoModal } from "./component/infoModal";
 
 export const BoardContext = createContext<AppContext>({
 	board: boardGrid,
-	setBoard: () => undefined,
 	index: { row: 0, col: 0 },
-	setIndex: () => undefined,
 	actualWord: "",
+	login: false,
 	curGuess: "",
+	showLogin: () => undefined,
+	setIndex: () => undefined,
 	setGuess: () => undefined,
-	invalid: false,
-	setInvalid: () => undefined,
+	enterKey: () => undefined,
+	backKey: () => undefined,
+	letterKey: () => undefined,
 });
 
 function App() {
+	const [cookie, _] = useCookies(['auth_token']);
 	const [board, setBoard] = useState<string[][]>(boardGrid);
 	const [actualWord, setWord] = useState<string>(" ");
 	const [curGuess, setGuess] = useState<string>("");
 	const [stats, showStats] = useState<boolean>(false);
 	const [login, setLogin] = useState<boolean>(false);
+	const [infoState, setInfoState] = useState<boolean>(false);
 	const [invalidWord, setInvalid] = useState<boolean>(false);
 	const [guessCount, setGuessCount] = useState<number>(0);
 	const [index, setIndex] = useState<curGuess>({ row: 0, col: 0 });
@@ -61,12 +40,49 @@ function App() {
 		played: 0,
 		wins: 0,
 		winPercent: 0,
-		distribution: [0,0,0,0,0,0]
+		distribution: [0, 0, 0, 0, 0, 0],
 	});
+
+	const keyEnter = () => {
+		if (index.col !== 5) return;
+
+		if (!checkWord(curGuess.toLowerCase())) {
+			setInvalid(true);
+			setTimeout(() => {
+				setInvalid(false);
+			}, 1500);
+			return;
+		}
+		setIndex({ row: index.row + 1, col: 0 });
+	};
+
+	const backKey = () => {
+		let temp = [...board];
+		if (index.col <= 0 || index.col > 5) return;
+
+		temp[index.row][index.col - 1] = "";
+		setBoard(temp);
+		setIndex({ ...index, col: index.col >= 0 ? index.col - 1 : 0 });
+		setGuess(board[index.row].join(""));
+	};
+
+	const letterKey = (letter: string) => {
+		let temp = [...board];
+		if (index.col > 4) return;
+
+		if (letter !== "Enter" && letter !== "Back") {
+			temp[index.row][index.col] = letter;
+			setBoard(temp);
+			setIndex({ ...index, col: index.col + 1 });
+			setGuess(board[index.row].join(""));
+		}
+	};
 
 	useEffect(() => {
 		const newDaily = getDaily();
-		setWord(newDaily.toUpperCase());
+		setWord(newDaily.toUpperCase());	
+
+		const curGameData = window.localStorage.getItem("currentGame");
 		const curUserData = window.localStorage.getItem("userStats");
 		if (curUserData) {
 			const res: userStats = JSON.parse(curUserData);
@@ -76,29 +92,36 @@ function App() {
 				winPercent: res.winPercent,
 				wins: res.wins,
 				played: res.played,
-				distribution: res.distribution
+				distribution: res.distribution,
 			});
+		}
+
+		if (curGameData) {
+			const curGame: currentGame = JSON.parse(curGameData);
+			setBoard(curGame.board);
+			setIndex(curGame.index);
 		}
 	}, []);
 
 	if (curGuess === actualWord || index.row == 6) {
 		let win: number = userStats.wins;
 		let played: number = userStats.played + 1;
+		let newDistribution: number[] = userStats.distribution;
 		if (curGuess === actualWord) {
-			userStats.distribution[index.col] += 1
-			setGuessCount(index.col + 1)
-			setGuess("");
+			setGuess(() => "");
+			newDistribution[index.row] += 1 / 2;
+			setGuessCount(index.col + 1);
 			win += 1;
 		}
-		setIndex({ col: 6, row: 4 });
+		setIndex({ row: 5, col: 6 });
 
 		const newStats: userStats = {
 			curStreak: userStats.curStreak,
 			played: played,
 			wins: win,
-			winPercent: win / played,
+			winPercent: (win / played) * 100,
 			maxStreak: userStats.maxStreak,
-			distribution: userStats.distribution
+			distribution: newDistribution,
 		};
 
 		setUserStats(newStats);
@@ -107,44 +130,50 @@ function App() {
 	}
 
 	return (
-		<div className="App min-h-screen bg-[#0e0f10] text-white py-3 font-sans">
+		<div className="App min-h-screen bg-[#0e0f10] py-3 font-sans text-white">
+			{invalidWord && (
+				<div className="absolute left-0 right-0 top-12 z-10 mx-auto flex h-10 w-32 items-center justify-center rounded-md bg-[#FFFFFF] text-center text-xs font-bold text-black">
+					Not a word in list
+				</div>
+			)}
 			<Header
 				stats={stats}
 				showStats={showStats}
-				login={login}
-				showLogin={setLogin}
+				infoState={infoState}
+				setInfoState={setInfoState}
 			></Header>
-			{invalidWord && (
-				<div className="absolute rounded-sm w-screen left-0 right-0 mx-auto bg-[#818384] z-10 text-center">
-					Invalid word
-				</div>
-			)}
 			<BoardContext.Provider
 				value={{
 					board,
-					setBoard,
 					index,
-					setIndex,
 					actualWord,
+					login,
 					curGuess,
+					showLogin: setLogin,
+					setIndex,
 					setGuess,
-					setInvalid,
-					invalid: invalidWord,
+					enterKey: keyEnter,
+					backKey: backKey,
+					letterKey: letterKey,
 				}}
 			>
 				<Board></Board>
 				<Keyboard></Keyboard>
+				{infoState && (
+					<InfoModal
+						modalState={infoState}
+						setModal={setInfoState}
+					></InfoModal>
+				)}
 				{stats && (
 					<StatCard
 						guessCount={guessCount}
 						userStats={userStats}
 						stats={stats}
 						showStats={showStats}
-						login={login}
-						showLogin={setLogin}
 					></StatCard>
 				)}
-				{login && <Login login={login} showLogin={setLogin} userStats={userStats}></Login>}
+				{login && <Login userStats={userStats}></Login>}
 			</BoardContext.Provider>
 		</div>
 	);

@@ -1,4 +1,6 @@
-import { FC } from "react";
+import { FC, useCallback, useContext, useEffect } from "react";
+import { BoardContext } from "../App";
+import { currentGame } from "../util/types";
 import { Key } from "./key";
 
 interface KeyboardProps {}
@@ -20,6 +22,8 @@ let createRow = (row: string[]) => {
 };
 
 export const Keyboard: FC<KeyboardProps> = () => {
+	const { board, letterKey, enterKey, backKey, index, login, curGuess } =
+		useContext(BoardContext);
 	const r1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
 	const r2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L"];
 	const r3 = ["Z", "X", "C", "V", "B", "N", "M"];
@@ -28,8 +32,47 @@ export const Keyboard: FC<KeyboardProps> = () => {
 	let item2 = createRow(r2);
 	let item3 = createRow(r3);
 
+	const handleKey = useCallback(
+		(e: any) => {
+			if (
+				e.key !== "Enter" &&
+				e.key !== "Backspace" &&
+				e.keyCode >= 65 &&
+				e.keyCode <= 90
+			) {
+				letterKey(e.key.toUpperCase());
+			} else if (e.key === "Enter") {
+				enterKey();
+			} else if(e.key === "Backspace"){
+				backKey();
+			}
+			
+			const curGame: currentGame = {
+				board: board,
+				index: { row: index.row, col: index.col },
+				guess: curGuess,
+			};
+	
+			//window.localStorage.setItem("currentGame", JSON.stringify(curGame));
+		},
+		[index]
+	);
+
+	useEffect(() => {
+		if (!login) {
+			window.addEventListener("keydown", handleKey);
+
+			return () => {
+				window.removeEventListener("keydown", handleKey);
+			};
+		}
+	}, [handleKey, login]);
+
 	return (
-		<div className="flex flex-col items-center justify-center m-3">
+		<div
+			className="m-3 flex flex-col items-center justify-center"
+			onKeyDown={handleKey}
+		>
 			<div className="flex">{item1}</div>
 			<div className="flex">{item2}</div>
 			<div className="flex">
