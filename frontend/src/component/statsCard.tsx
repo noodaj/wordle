@@ -1,21 +1,14 @@
-import React, { FC } from "react";
+import React, { FC, useContext } from "react";
+import { useCookies } from "react-cookie";
 import { IoIosStats, IoMdClose } from "react-icons/io";
-
-interface userStats {
-	curStreak: number;
-	maxStreak: number;
-	wins: number;
-	played: number;
-	winPercent: number;
-}
+import { BoardContext } from "../App";
+import { userStats } from "../util/types";
 
 interface StatProps {
-	guessCount: number; 
+	guessCount: number;
 	userStats: userStats;
 	stats: boolean;
 	showStats: React.Dispatch<React.SetStateAction<boolean>>;
-	login: boolean;
-	showLogin: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const StatCard: FC<StatProps> = ({
@@ -23,12 +16,12 @@ export const StatCard: FC<StatProps> = ({
 	userStats,
 	showStats,
 	stats,
-	login,
-	showLogin,
 }) => {
+	const { login, showLogin } = useContext(BoardContext);
+	const [cookie, _] = useCookies(["auth_token"]);
 	return (
 		<div className="absolute inset-0 flex items-center justify-center bg-black/75">
-			<div className="w-[525px] h-[650px] rounded-lg bg-[#0e0f10]">
+			<div className="h-[650px] w-[525px] rounded-lg bg-[#0e0f10] text-3xl">
 				<nav>
 					<IoMdClose
 						className="float-right mr-4 mt-4 hover:cursor-pointer"
@@ -37,26 +30,34 @@ export const StatCard: FC<StatProps> = ({
 						}}
 					></IoMdClose>
 				</nav>
-				<div className="flex flex-col gap-2 mx-20 mt-20">
-					<p className="font-bold text-lg">Statistics</p>
+				<div className="mx-20 mt-20 flex flex-col gap-2">
+					<p className="text-lg font-bold">Statistics</p>
 
-					<div className="flex gap-10 justify-around mb-3">
+					<div className="mb-3 flex justify-around gap-10">
 						<div className="flex flex-col items-center">
-							<p className="text-4xl font-bold">{userStats.played}</p>
+							<p className="text-4xl font-bold">
+								{userStats.played}
+							</p>
 							<p className="text-xs font-semibold">Played</p>
 						</div>
 						<div className="flex flex-col items-center">
-							<p className="text-4xl font-bold">{userStats.winPercent}</p>
+							<p className="text-4xl font-bold">
+								{userStats.winPercent.toFixed(0)}
+							</p>
 							<p className="text-xs font-semibold">Win %</p>
 						</div>
 						<div className="flex flex-col items-center">
-							<p className="text-4xl font-bold">{userStats.curStreak}</p>
+							<p className="text-4xl font-bold">
+								{userStats.curStreak}
+							</p>
 							<p className="text-xs font-semibold">
 								Current Streak
 							</p>
 						</div>
 						<div className="flex flex-col items-center">
-							<p className="text-4xl font-bold">{userStats.maxStreak}</p>
+							<p className="text-4xl font-bold">
+								{userStats.maxStreak}
+							</p>
 							<p className="text-xs font-semibold">Max Streak</p>
 						</div>
 					</div>
@@ -65,16 +66,23 @@ export const StatCard: FC<StatProps> = ({
 					</div>
 					<hr></hr>
 					<div className="flex flex-row items-center py-5 text-base font-normal">
-						<IoIosStats className="h-8 w-8"></IoIosStats>
-						<p
-							className="underline hover:cursor-pointer"
-							onClick={() => {
-								showLogin(!login);
-								showStats(!stats);
-							}}
-						>
-							Log In or create an account to see your stats.
-						</p>
+						{cookie ? (
+							<></>
+						) : (
+							<>
+								<IoIosStats className="h-8 w-8"></IoIosStats>
+								<p
+									className="underline hover:cursor-pointer"
+									onClick={() => {
+										showLogin(!login);
+										showStats(!stats);
+									}}
+								>
+									Log In or create an account to see your
+									stats.
+								</p>
+							</>
+						)}
 					</div>
 				</div>
 			</div>

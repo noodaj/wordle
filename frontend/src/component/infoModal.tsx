@@ -1,23 +1,20 @@
-import React, { FC } from "react";
-import { IoMdClose, IoIosStats } from "react-icons/io";
-import { Link } from "react-router-dom";
+import React, { FC, useContext } from "react";
+import { useCookies } from "react-cookie";
+import { IoIosStats, IoMdClose } from "react-icons/io";
+import { BoardContext } from "../App";
 
 interface InfoProps {
 	modalState: boolean;
 	setModal: React.Dispatch<React.SetStateAction<boolean>>;
-	login: boolean;
-	showLogin: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const InfoModal: FC<InfoProps> = ({
-	modalState,
-	setModal,
-	login,
-	showLogin,
-}) => {
+export const InfoModal: FC<InfoProps> = ({ modalState, setModal }) => {
+	const { login, showLogin } = useContext(BoardContext);
+	const [cookie, _] = useCookies(["auth_token"]);
+
 	return (
 		<div className="absolute inset-0 flex items-center justify-center bg-black/75">
-			<div className="w-[525px] h-[650px] rounded-lg bg-[#0e0f10]">
+			<div className="h-[650px] w-[525px] rounded-lg bg-[#0e0f10]">
 				<nav>
 					<IoMdClose
 						className="float-right mr-4 mt-4 hover:cursor-pointer"
@@ -33,7 +30,7 @@ export const InfoModal: FC<InfoProps> = ({
 							Guess the Wordle in 6 tries.
 						</p>
 					</div>
-					<div className="font-normal text-base">
+					<div className="text-base font-normal">
 						<li>Each guess must be a valid 5-letter word.</li>
 						<li className="break-words">
 							The color of the tiles will change to show how close
@@ -43,8 +40,8 @@ export const InfoModal: FC<InfoProps> = ({
 					<div className="mt-3">
 						<p className="text-lg">Examples</p>
 						<ul className="mb-5">
-							<div className="flex flex-row gap-1 mb-1">
-								<div className="bg-[#538D4E] exampleCell">
+							<div className="mb-1 flex flex-row gap-1">
+								<div className="exampleCell bg-[#538D4E]">
 									W
 								</div>
 								<div className="exampleCell">E</div>
@@ -58,7 +55,7 @@ export const InfoModal: FC<InfoProps> = ({
 							</p>
 						</ul>
 						<ul className="mb-5">
-							<div className="flex flex-row gap-1 mb-1">
+							<div className="mb-1 flex flex-row gap-1">
 								<div className="exampleCell">P</div>
 								<div className="exampleCell bg-[#B59F3B]">
 									I
@@ -73,7 +70,7 @@ export const InfoModal: FC<InfoProps> = ({
 							</p>
 						</ul>
 						<ul className="mb-5">
-							<div className="flex flex-row gap-1 mb-1">
+							<div className="mb-1 flex flex-row gap-1">
 								<div className="exampleCell">V</div>
 								<div className="exampleCell">A</div>
 								<div className="exampleCell">G</div>
@@ -89,16 +86,23 @@ export const InfoModal: FC<InfoProps> = ({
 						</ul>
 						<hr></hr>
 						<div className="flex flex-row items-center py-5 text-base font-normal">
-							<IoIosStats className="h-8 w-8"></IoIosStats>
-							<p
-								className="underline hover:cursor-pointer"
-								onClick={() => {
-									showLogin(!login);
-									setModal(!modalState);
-								}}
-							>
-								Log In or create an account to see your stats.
-							</p>
+							{cookie.auth_token ? (
+								<></>
+							) : (
+								<>
+									<IoIosStats className="h-8 w-8"></IoIosStats>
+									<p
+										className="underline hover:cursor-pointer"
+										onClick={() => {
+											setModal(!modalState);
+											showLogin(true);
+										}}
+									>
+										Log In or create an account to see your
+										stats.
+									</p>
+								</>
+							)}
 						</div>
 						<hr></hr>
 						<div className="py-6 text-base font-normal">
