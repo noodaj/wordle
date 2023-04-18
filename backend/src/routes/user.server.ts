@@ -1,8 +1,8 @@
+import bcrypt from "bcrypt";
 import express, { Request, Response } from "express";
 import { HydratedDocument } from "mongoose";
-import bcrypt from "bcrypt";
-import UserModel from "../util/user";
 import { IUser, IUserData } from "../util/types.server";
+import UserModel from "../util/user";
 
 //router for updating user data
 const router = express.Router();
@@ -26,6 +26,29 @@ router.patch("/updateData", async (req: Request, res: Response) => {
 			.json({ message: "An error occured when updating" });
 	}
 });
+
+router.get("/getData", async (req: Request, res: Response) => {
+	//destructure
+	const { userID } = req.query;
+	
+	try {
+		const response = await UserModel.findById({ _id: userID });
+
+		return res.status(200).json({
+			wins: response.wins,
+			curStreak: response.curStreak,
+			maxStreak: response.maxStreak,
+			winPercent: response.winPercent,
+			played: response.played,
+			distribution: response.distribution,
+		});
+	} catch (err) {
+		console.log(err);
+		return res.status(400).json({ error: "userID not found", err });
+	}
+	
+});
+
 export { router as userRouter };
 
 //create user function
@@ -39,7 +62,6 @@ export const createUser = async ({
 	wins,
 	distribution,
 }: IUser) => {
-
 	//hash password
 	const hashed = await bcrypt.hash(password, 10);
 
@@ -53,7 +75,7 @@ export const createUser = async ({
 		played,
 		winPercent,
 		wins,
-		distribution
+		distribution,
 	});
 
 	//return the user id
