@@ -65,8 +65,17 @@ export const StatCard: FC<StatProps> = ({
 						<p className="text-lg font-bold">Guess Distribution</p>
 					</div>
 					<hr></hr>
+					{userStats.distribution.map((_, index, userStats) => {
+						return (
+							<div className="text-base font-bold">
+								{index + 1}
+								{userStats[index]}
+							</div>
+						);
+					})}
+					<hr></hr>
 					<div className="flex flex-row items-center py-5 text-base font-normal">
-						{cookie ? (
+						{cookie.auth_token ? (
 							<></>
 						) : (
 							<>
@@ -84,6 +93,7 @@ export const StatCard: FC<StatProps> = ({
 							</>
 						)}
 					</div>
+
 				</div>
 			</div>
 		</div>
