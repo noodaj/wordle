@@ -20,14 +20,6 @@ export const Key: FC<KeyProp> = ({ letter, nonLetter, color }) => {
 		} else {
 			letterKey(letter);
 		}
-		
-		const curGame: currentGame = {
-			board: board,
-			index: { row: index.row, col: index.col },
-			guess: curGuess,
-		};
-
-		//window.localStorage.setItem("currentGame", JSON.stringify(curGame));
 	};
 
 	return (

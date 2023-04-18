@@ -8,7 +8,7 @@ interface CellProps {
 }
 
 export const Cell: FC<CellProps> = ({ letter, r, c }) => {
-	const { index, actualWord, setIndex } = useContext(BoardContext);
+	const { index, actualWord } = useContext(BoardContext);
 
 	const correctLetter = letter != "" && letter === actualWord[c];
 	const hasLetter = letter != "" && actualWord.includes(letter);

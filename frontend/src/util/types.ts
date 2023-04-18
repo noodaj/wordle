@@ -8,7 +8,7 @@ export interface AppContext {
 	index: curGuess;
 	actualWord: string;
 	login: boolean;
-	curGuess: string,
+	curGuess: string;
 	showLogin: React.Dispatch<React.SetStateAction<boolean>>;
 	setIndex: React.Dispatch<React.SetStateAction<curGuess>>;
 	setGuess: React.Dispatch<React.SetStateAction<string>>;

@@ -46,14 +46,6 @@ export const Keyboard: FC<KeyboardProps> = () => {
 			} else if(e.key === "Backspace"){
 				backKey();
 			}
-			
-			const curGame: currentGame = {
-				board: board,
-				index: { row: index.row, col: index.col },
-				guess: curGuess,
-			};
-	
-			//window.localStorage.setItem("currentGame", JSON.stringify(curGame));
 		},
 		[index]
 	);

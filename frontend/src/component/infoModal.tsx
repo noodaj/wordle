@@ -9,7 +9,7 @@ interface InfoProps {
 }
 
 export const InfoModal: FC<InfoProps> = ({ modalState, setModal }) => {
-	const { login, showLogin } = useContext(BoardContext);
+	const { showLogin } = useContext(BoardContext);
 	const [cookie, _] = useCookies(["auth_token"]);
 
 	return (
@@ -85,6 +85,7 @@ export const InfoModal: FC<InfoProps> = ({ modalState, setModal }) => {
 							</p>
 						</ul>
 						<hr></hr>
+
 						<div className="flex flex-row items-center py-5 text-base font-normal">
 							{cookie.auth_token ? (
 								<></>
@@ -101,10 +102,10 @@ export const InfoModal: FC<InfoProps> = ({ modalState, setModal }) => {
 										Log In or create an account to see your
 										stats.
 									</p>
+									<hr></hr>
 								</>
 							)}
 						</div>
-						<hr></hr>
 						<div className="py-6 text-base font-normal">
 							A new puzzle is released daily at midnight.
 						</div>

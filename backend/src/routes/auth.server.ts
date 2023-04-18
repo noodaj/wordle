@@ -37,7 +37,7 @@ router.post("/register", async (req: Request, res: Response) => {
 			.status(400)
 			.json({ message: "Please enter a valid password." });
 	}
-
+	
 	//create the new user from req.body
 	const newUser = await createUser({
 		username,
@@ -61,7 +61,7 @@ router.post("/register", async (req: Request, res: Response) => {
 	const token = jwt.sign({ id: newUser }, process.env.JWT_SECRET, {
 		expiresIn: "30d",
 	});
-	return res.json({ userID: newUser.user.id , token });
+	return res.json({ userID: newUser.user.id, token });
 });
 
 router.post("/login", async (req: Request, res: Response) => {
@@ -74,7 +74,7 @@ router.post("/login", async (req: Request, res: Response) => {
 	) {
 		return res
 			.status(400)
-			.json({ message: "One of more of the fields are invalid" });
+			.json({ message: "One or more of the fields are invalid" });
 	}
 
 	//find user
@@ -82,7 +82,9 @@ router.post("/login", async (req: Request, res: Response) => {
 
 	//if not user or password send error msg
 	if (!user || !bcrypt.compare(password, user.password)) {
-		return res.status(401).json({ message: "Invalid login" });
+		return res
+			.status(400)
+			.json({ message: "Invalid username or password" });
 	}
 
 	//sign jwt token
