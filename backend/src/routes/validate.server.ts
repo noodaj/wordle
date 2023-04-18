@@ -1,5 +1,5 @@
 export const validUsername = (username: string): string | undefined => {
-	if (!username) {
+	if (!username || username.length < 5) {
 		return "Invalid username";
 	}
 };
