@@ -4,6 +4,7 @@ import { useCookies } from "react-cookie";
 import { IoMdClose } from "react-icons/io";
 import { BoardContext } from "../App";
 import { userStats } from "../util/types";
+import { errorMonitor } from "events";
 
 interface LoginProps {
 	userStats: userStats;
@@ -13,12 +14,14 @@ interface res {
 	token: string;
 	userID: string;
 }
+
 export const Login: FC<LoginProps> = ({ userStats }) => {
 	const { login, showLogin } = useContext(BoardContext);
 	const [_, setCookies] = useCookies(["auth_token"]);
 	const [newUser, showNewForm] = useState<boolean>(false);
-	const userName = useRef<any>();
-	const password = useRef<any>();
+	const [error, setError] = useState<{ error: boolean; message: string }>();
+	const userName = useRef<HTMLInputElement>(null);
+	const password = useRef<HTMLInputElement>(null);
 
 	const submitForm = async (e: any) => {
 		e.preventDefault();
@@ -27,8 +30,8 @@ export const Login: FC<LoginProps> = ({ userStats }) => {
 				const res: AxiosResponse<res> = await axios.post(
 					"http://localhost:5000/auth/login",
 					{
-						username: userName.current.value,
-						password: password.current.value,
+						username: userName.current?.value,
+						password: password.current?.value,
 					}
 				);
 
@@ -37,17 +40,32 @@ export const Login: FC<LoginProps> = ({ userStats }) => {
 				window.localStorage.removeItem("userStats");
 				window.localStorage.removeItem("curGame");
 				showLogin(false);
-			} catch (err) {
-				return <>Invalid password</>
+			} catch (err: any) {
+				setError({ error: true, message: err.response.data.message });
 			}
 		} else {
 			try {
 				const res: AxiosResponse<res> = await axios.post(
 					"http://localhost:5000/auth/register",
-					{}
+					{
+						username: userName.current?.value,
+						password: password.current?.value,
+						curStreak: userStats.curStreak,
+						maxStreak: userStats.maxStreak,
+						played: userStats.played,
+						winPercent: userStats.winPercent,
+						wins: userStats.wins,
+						distribution: userStats.distribution,
+					}
 				);
-			} catch (err) {
-				console.log(err);
+
+				setCookies("auth_token", res.data.token);
+				window.localStorage.setItem("userID", res.data.userID);
+				window.localStorage.removeItem("userStats");
+				window.localStorage.removeItem("currentGame");
+				showLogin(false);
+			} catch (err: any) {
+				setError({ error: true, message: err.response.data.message });
 			}
 		}
 	};
@@ -94,6 +112,11 @@ export const Login: FC<LoginProps> = ({ userStats }) => {
 									Login
 								</button>
 							</form>
+							{error && (
+								<p className="text-xs text-red-500">
+									{error.message}
+								</p>
+							)}
 							<button
 								onClick={() => {
 									showNewForm(true);
@@ -134,8 +157,13 @@ export const Login: FC<LoginProps> = ({ userStats }) => {
 								>
 									Create account
 								</button>
+								{error && (
+									<p className="text-xs text-red-500">
+										{error.message}
+									</p>
+								)}
 								<button
-									onClick={() => showNewForm(!newUser)}
+									onClick={() => showNewForm(false)}
 									className="loginStyle mt-2 bg-[#0E0F10] font-bold hover:bg-[#5E6161]"
 								>
 									Already have an account with us?
