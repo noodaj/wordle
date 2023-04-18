@@ -1,13 +1,16 @@
-import { createContext, useState, useEffect } from "react";
+import axios from "axios";
+import { createContext, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Board } from "./component/board";
 import { Header } from "./component/header";
-import { boardGrid, checkWord, getDaily } from "./util/board";
-import { Keyboard } from "./component/keyboard";
-import { StatCard } from "./component/statsCard";
-import { Login } from "./component/login";
-import { AppContext, curGuess, currentGame, userStats } from "./util/types";
 import { InfoModal } from "./component/infoModal";
+import { Keyboard } from "./component/keyboard";
+import { Login } from "./component/login";
+import { SidePanel } from "./component/sidePanel";
+import { StatCard } from "./component/statsCard";
+import { boardGrid, checkWord, getDaily } from "./util/board";
+import { AppContext, curGuess, currentGame, userStats } from "./util/types";
+import { useQuery } from "@tanstack/react-query";
 
 export const BoardContext = createContext<AppContext>({
 	board: boardGrid,
@@ -24,7 +27,7 @@ export const BoardContext = createContext<AppContext>({
 });
 
 function App() {
-	const [cookie, _] = useCookies(['auth_token']);
+	const [cookie, _] = useCookies(["auth_token"]);
 	const [board, setBoard] = useState<string[][]>(boardGrid);
 	const [actualWord, setWord] = useState<string>(" ");
 	const [curGuess, setGuess] = useState<string>("");
@@ -32,6 +35,7 @@ function App() {
 	const [login, setLogin] = useState<boolean>(false);
 	const [infoState, setInfoState] = useState<boolean>(false);
 	const [invalidWord, setInvalid] = useState<boolean>(false);
+	const [sidePanel, showSidePanel] = useState<boolean>(false);
 	const [guessCount, setGuessCount] = useState<number>(0);
 	const [index, setIndex] = useState<curGuess>({ row: 0, col: 0 });
 	const [userStats, setUserStats] = useState<userStats>({
@@ -41,6 +45,20 @@ function App() {
 		wins: 0,
 		winPercent: 0,
 		distribution: [0, 0, 0, 0, 0, 0],
+	});
+
+	useQuery({
+		queryKey: ["fetch"],
+		queryFn: () => {
+			if (cookie.auth_token) {
+				const data = window.localStorage.getItem("userID");
+				const res = fetchData(data!);
+				return res;
+			}
+		},
+		onSuccess: (data) => {
+			setUserStats(data);
+		},
 	});
 
 	const keyEnter = () => {
@@ -78,30 +96,60 @@ function App() {
 		}
 	};
 
+	//function to get userData if user is signed in
+	const fetchData = async (userID: string) => {
+		const res = await axios.get("http://localhost:5000/user/getData", {
+			params: { userID: userID },
+		});
+		const data = await res.data;
+
+		return data;
+	};
+
+	//use effect to run on component mount
 	useEffect(() => {
+		//get daily word
 		const newDaily = getDaily();
-		setWord(newDaily.toUpperCase());	
+		setWord(newDaily.toUpperCase());
 
-		const curGameData = window.localStorage.getItem("currentGame");
-		const curUserData = window.localStorage.getItem("userStats");
-		if (curUserData) {
-			const res: userStats = JSON.parse(curUserData);
-			setUserStats({
-				curStreak: res.curStreak,
-				maxStreak: res.maxStreak,
-				winPercent: res.winPercent,
-				wins: res.wins,
-				played: res.played,
-				distribution: res.distribution,
-			});
-		}
+		//if there is no token, we get data from local storage
+		if (!cookie.auth_token) {
+			const curGameData = window.localStorage.getItem("currentGame");
+			const curUserData = window.localStorage.getItem("userStats");
 
-		if (curGameData) {
-			const curGame: currentGame = JSON.parse(curGameData);
-			setBoard(curGame.board);
-			setIndex(curGame.index);
+			//parse local user stats and board
+			if (curUserData) {
+				const res: userStats = JSON.parse(curUserData);
+				setUserStats({
+					curStreak: res.curStreak,
+					maxStreak: res.maxStreak,
+					winPercent: res.winPercent,
+					wins: res.wins,
+					played: res.played,
+					distribution: res.distribution,
+				});
+			}
+
+			if (curGameData) {
+				const curGame: currentGame = JSON.parse(curGameData);
+				setBoard(curGame.board);
+				setIndex(curGame.index);
+			}
 		}
 	}, []);
+
+	//use effect to run whenever the index changes
+	//
+	useEffect(() => {
+		if (board != boardGrid) {
+			const curGame: currentGame = {
+				board,
+				index: { row: index.row, col: index.col },
+				guess: curGuess,
+			};
+			window.localStorage.setItem("currentGame", JSON.stringify(curGame));
+		}
+	}, [index]);
 
 	if (curGuess === actualWord || index.row == 6) {
 		let win: number = userStats.wins;
@@ -138,10 +186,20 @@ function App() {
 			)}
 			<Header
 				stats={stats}
+				sidePanel={sidePanel}
 				showStats={showStats}
 				infoState={infoState}
 				setInfoState={setInfoState}
+				showSidePanel={showSidePanel}
 			></Header>
+			{sidePanel && (
+				<SidePanel
+					sidePanel={sidePanel}
+					showSidePanel={showSidePanel}
+					login={login}
+					showLogin={setLogin}
+				></SidePanel>
+			)}
 			<BoardContext.Provider
 				value={{
 					board,
