@@ -3,23 +3,35 @@ import express, { Request, Response } from "express";
 import { HydratedDocument } from "mongoose";
 import { IUser, IUserData } from "../util/types.server";
 import UserModel from "../util/user";
-
 //router for updating user data
 const router = express.Router();
 router.patch("/updateData", async (req: Request, res: Response) => {
 	//destructure
-	const { userID, curStreak, maxStreak, played, winPercent, wins } =
-		req.body as IUserData;
+	const {
+		userID,
+		stats: { curStreak, maxStreak, played, winPercent, wins, distribution },
+	} = req.body[0] as IUserData;
 
 	//try finding user and updating
 	//if user not found send error message
 	try {
 		await UserModel.findOneAndUpdate(
 			{ _id: userID },
-			{ $set: { curStreak, maxStreak, played, winPercent, wins } }
+			{
+				$set: {
+					curStreak,
+					maxStreak,
+					played,
+					winPercent,
+					wins,
+					distribution,
+				},
+			}
 		);
 
-		return res.status(200).json({ message: "Success" });
+		return res.status(200).json({
+			message: "Success",
+		});
 	} catch (err) {
 		return res
 			.status(400)
@@ -30,7 +42,7 @@ router.patch("/updateData", async (req: Request, res: Response) => {
 router.get("/getData", async (req: Request, res: Response) => {
 	//destructure
 	const { userID } = req.query;
-	
+
 	try {
 		const response = await UserModel.findById({ _id: userID });
 
@@ -46,7 +58,6 @@ router.get("/getData", async (req: Request, res: Response) => {
 		console.log(err);
 		return res.status(400).json({ error: "userID not found", err });
 	}
-	
 });
 
 export { router as userRouter };

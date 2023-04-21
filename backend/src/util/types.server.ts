@@ -13,11 +13,14 @@ export interface IUser {
 //model for updating userdata
 export interface IUserData {
 	userID: string;
-	wins: number;
-	curStreak: number;
-	maxStreak: number;
-	winPercent: number;
-	played: number;
+	stats: {
+		wins: number;
+		curStreak: number;
+		maxStreak: number;
+		winPercent: number;
+		played: number;
+		distribution: number[];
+	};
 }
 
 export interface word {
