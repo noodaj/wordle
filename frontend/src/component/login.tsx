@@ -1,10 +1,9 @@
+import { BoardContext } from "../App";
+import { userStats } from "../util/types";
 import axios, { AxiosResponse } from "axios";
 import { FC, useContext, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { IoMdClose } from "react-icons/io";
-import { BoardContext } from "../App";
-import { userStats } from "../util/types";
-import { errorMonitor } from "events";
 
 interface LoginProps {
 	userStats: userStats;
@@ -37,8 +36,6 @@ export const Login: FC<LoginProps> = ({ userStats }) => {
 
 				setCookies("auth_token", res.data.token);
 				window.localStorage.setItem("userID", res.data.userID);
-				window.localStorage.removeItem("userStats");
-				window.localStorage.removeItem("curGame");
 				showLogin(false);
 			} catch (err: any) {
 				setError({ error: true, message: err.response.data.message });
@@ -61,8 +58,6 @@ export const Login: FC<LoginProps> = ({ userStats }) => {
 
 				setCookies("auth_token", res.data.token);
 				window.localStorage.setItem("userID", res.data.userID);
-				window.localStorage.removeItem("userStats");
-				window.localStorage.removeItem("currentGame");
 				showLogin(false);
 			} catch (err: any) {
 				setError({ error: true, message: err.response.data.message });
@@ -120,6 +115,7 @@ export const Login: FC<LoginProps> = ({ userStats }) => {
 							<button
 								onClick={() => {
 									showNewForm(true);
+									setError({ error: false, message: "" });
 								}}
 								className="  mt-3 rounded-sm border-2 border-[#5E6161] bg-[#0e0f10] px-3 py-2 text-sm font-bold hover:bg-[#5E6161]"
 							>

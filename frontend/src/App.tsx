@@ -1,5 +1,7 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AnimatePresence } from "framer-motion";
 import { useCookies } from "react-cookie";
 import { Board } from "./component/board";
 import { Header } from "./component/header";
@@ -10,13 +12,12 @@ import { SidePanel } from "./component/sidePanel";
 import { StatCard } from "./component/statsCard";
 import { boardGrid, checkWord, getDaily } from "./util/board";
 import { AppContext, curGuess, currentGame, userStats } from "./util/types";
-import { useQuery } from "@tanstack/react-query";
 
 export const BoardContext = createContext<AppContext>({
 	board: boardGrid,
 	index: { row: 0, col: 0 },
-	actualWord: "",
 	login: false,
+	actualWord: "",
 	curGuess: "",
 	showLogin: () => undefined,
 	setIndex: () => undefined,
@@ -28,6 +29,7 @@ export const BoardContext = createContext<AppContext>({
 
 function App() {
 	const [cookie, _] = useCookies(["auth_token"]);
+	const queryClient = useQueryClient();
 	const [board, setBoard] = useState<string[][]>(boardGrid);
 	const [actualWord, setWord] = useState<string>(" ");
 	const [curGuess, setGuess] = useState<string>("");
@@ -50,15 +52,35 @@ function App() {
 	useQuery({
 		queryKey: ["fetch"],
 		queryFn: () => {
-			if (cookie.auth_token) {
-				const data = window.localStorage.getItem("userID");
-				const res = fetchData(data!);
+			if (cookie.auth_token != undefined) {
+				const userID = window.localStorage.getItem("userID");
+				const res = fetchData(userID!);
 				return res;
 			}
+			return null;
 		},
 		onSuccess: (data) => {
-			setUserStats(data);
+			if (data) {
+				setUserStats(data);
+			}
 		},
+	});
+
+	const update = useMutation({
+		mutationFn: (userID: string) =>
+			axios.patch("http://localhost:5000/user/updateData", [
+				{
+					userID: userID,
+					stats: {
+						wins: 1,
+						curStreak: 1,
+						maxStreak: 11,
+						winPercent: 5,
+						played: 1,
+						distribution: [],
+					},
+				},
+			]),
 	});
 
 	const keyEnter = () => {
@@ -98,12 +120,15 @@ function App() {
 
 	//function to get userData if user is signed in
 	const fetchData = async (userID: string) => {
-		const res = await axios.get("http://localhost:5000/user/getData", {
-			params: { userID: userID },
-		});
-		const data = await res.data;
-
-		return data;
+		try {
+			const res = await axios.get("http://localhost:5000/user/getData", {
+				params: { userID: userID },
+			});
+			const data = await res.data;
+			return data;
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
 	//use effect to run on component mount
@@ -139,9 +164,8 @@ function App() {
 	}, []);
 
 	//use effect to run whenever the index changes
-	//
 	useEffect(() => {
-		if (board != boardGrid) {
+		if (board != boardGrid && !cookie.auth_token) {
 			const curGame: currentGame = {
 				board,
 				index: { row: index.row, col: index.col },
@@ -172,13 +196,15 @@ function App() {
 			distribution: newDistribution,
 		};
 
-		setUserStats(newStats);
-		showStats(true);
-		window.localStorage.setItem("userStats", JSON.stringify(newStats));
+		if (!cookie.auth_token) {
+			setUserStats(newStats);
+			showStats(true);
+			window.localStorage.setItem("userStats", JSON.stringify(newStats));
+		}
 	}
 
 	return (
-		<div className="App min-h-screen bg-[#0e0f10] py-3 font-sans text-white">
+		<div className="App min-h-screen overflow-hidden bg-[#0e0f10] py-3 font-sans text-white">
 			{invalidWord && (
 				<div className="absolute left-0 right-0 top-12 z-10 mx-auto flex h-10 w-32 items-center justify-center rounded-md bg-[#FFFFFF] text-center text-xs font-bold text-black">
 					Not a word in list
@@ -192,14 +218,16 @@ function App() {
 				setInfoState={setInfoState}
 				showSidePanel={showSidePanel}
 			></Header>
-			{sidePanel && (
-				<SidePanel
-					sidePanel={sidePanel}
-					showSidePanel={showSidePanel}
-					login={login}
-					showLogin={setLogin}
-				></SidePanel>
-			)}
+			<AnimatePresence initial={false} mode="wait">
+				{sidePanel && (
+					<SidePanel
+						sidePanel={sidePanel}
+						showSidePanel={showSidePanel}
+						login={login}
+						showLogin={setLogin}
+					></SidePanel>
+				)}
+			</AnimatePresence>
 			<BoardContext.Provider
 				value={{
 					board,
@@ -215,22 +243,26 @@ function App() {
 					letterKey: letterKey,
 				}}
 			>
-				<Board></Board>
+				<AnimatePresence initial={false} mode="wait" key={"board"}>
+					<Board></Board>
+				</AnimatePresence>
 				<Keyboard></Keyboard>
-				{infoState && (
-					<InfoModal
-						modalState={infoState}
-						setModal={setInfoState}
-					></InfoModal>
-				)}
-				{stats && (
-					<StatCard
-						guessCount={guessCount}
-						userStats={userStats}
-						stats={stats}
-						showStats={showStats}
-					></StatCard>
-				)}
+				<AnimatePresence initial={false} mode="wait">
+					{infoState && (
+						<InfoModal
+							modalState={infoState}
+							setModal={setInfoState}
+						></InfoModal>
+					)}
+					{stats && (
+						<StatCard
+							guessCount={guessCount}
+							userStats={userStats}
+							stats={stats}
+							showStats={showStats}
+						></StatCard>
+					)}
+				</AnimatePresence>
 				{login && <Login userStats={userStats}></Login>}
 			</BoardContext.Provider>
 		</div>
