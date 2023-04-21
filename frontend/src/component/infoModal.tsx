@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import React, { FC, useContext } from "react";
 import { useCookies } from "react-cookie";
 import { IoIosStats, IoMdClose } from "react-icons/io";
@@ -13,8 +14,14 @@ export const InfoModal: FC<InfoProps> = ({ modalState, setModal }) => {
 	const [cookie, _] = useCookies(["auth_token"]);
 
 	return (
-		<div className="absolute inset-0 flex items-center justify-center bg-black/75">
-			<div className="h-[650px] w-[525px] rounded-lg bg-[#0e0f10]">
+		<div className="absolute inset-0 flex items-center justify-center overflow-hidden bg-black/75">
+			<motion.div
+				initial={{ y: "100vh", opacity: 0, scale: 1 }}
+				animate={{ y: 0, opacity: 1, scale: 1 }}
+				exit={{ y: "100vh", opacity: 0, transition: { duration: 0.3 } }}
+				className="h-[650px] w-[525px] rounded-lg bg-[#0e0f10]"
+				key="info"
+			>
 				<nav>
 					<IoMdClose
 						className="float-right mr-4 mt-4 hover:cursor-pointer"
@@ -41,9 +48,22 @@ export const InfoModal: FC<InfoProps> = ({ modalState, setModal }) => {
 						<p className="text-lg">Examples</p>
 						<ul className="mb-5">
 							<div className="mb-1 flex flex-row gap-1">
-								<div className="exampleCell bg-[#538D4E]">
+								<motion.div
+									initial={{ rotateX: 0 }}
+									animate={{
+										rotateX: 90,
+										transition: {
+											repeatType: "mirror",
+											repeat: 1,
+											duration: 0.2,
+											delay: 0.4,
+										},
+									}}
+									transition={{ delay: 2 }}
+									className="exampleCell bg-[#538D4E]"
+								>
 									W
-								</div>
+								</motion.div>
 								<div className="exampleCell">E</div>
 								<div className="exampleCell">A</div>
 								<div className="exampleCell">R</div>
@@ -57,9 +77,21 @@ export const InfoModal: FC<InfoProps> = ({ modalState, setModal }) => {
 						<ul className="mb-5">
 							<div className="mb-1 flex flex-row gap-1">
 								<div className="exampleCell">P</div>
-								<div className="exampleCell bg-[#B59F3B]">
+								<motion.div
+									initial={{ rotateX: 0 }}
+									animate={{
+										rotateX: 90,
+										transition: {
+											repeatType: "mirror",
+											repeat: 1,
+											duration: 0.2,
+											delay: 0.4,
+										},
+									}}
+									className="exampleCell bg-[#B59F3B]"
+								>
 									I
-								</div>
+								</motion.div>
 								<div className="exampleCell">L</div>
 								<div className="exampleCell">L</div>
 								<div className="exampleCell">S</div>
@@ -74,9 +106,21 @@ export const InfoModal: FC<InfoProps> = ({ modalState, setModal }) => {
 								<div className="exampleCell">V</div>
 								<div className="exampleCell">A</div>
 								<div className="exampleCell">G</div>
-								<div className="exampleCell bg-[#3A3A3C]">
+								<motion.div
+									initial={{ rotateX: 0 }}
+									animate={{
+										rotateX: 90,
+										transition: {
+											repeatType: "mirror",
+											repeat: 1,
+											duration: 0.2,
+											delay: 0.4,
+										},
+									}}
+									className="exampleCell bg-[#3A3A3C]"
+								>
 									U
-								</div>
+								</motion.div>
 								<div className="exampleCell">E</div>
 							</div>
 							<p className="text-base font-light">
@@ -111,7 +155,7 @@ export const InfoModal: FC<InfoProps> = ({ modalState, setModal }) => {
 						</div>
 					</div>
 				</div>
-			</div>
+			</motion.div>
 		</div>
 	);
 };

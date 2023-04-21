@@ -1,6 +1,14 @@
+import {
+	BarElement,
+	CategoryScale,
+	Chart as ChartJS,
+	LinearScale,
+} from "chart.js";
 import React, { FC, useContext } from "react";
+import { Bar } from "react-chartjs-2";
 import { useCookies } from "react-cookie";
 import { IoIosStats, IoMdClose } from "react-icons/io";
+import { motion } from "framer-motion";
 import { BoardContext } from "../App";
 import { userStats } from "../util/types";
 
@@ -11,6 +19,8 @@ interface StatProps {
 	showStats: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+ChartJS.register(BarElement, LinearScale, CategoryScale);
+
 export const StatCard: FC<StatProps> = ({
 	guessCount,
 	userStats,
@@ -19,9 +29,42 @@ export const StatCard: FC<StatProps> = ({
 }) => {
 	const { login, showLogin } = useContext(BoardContext);
 	const [cookie, _] = useCookies(["auth_token"]);
+
+	const options = {
+		tooltips: { enabled: false },
+		indexAxis: "y" as const,
+		scales: {
+			x: {
+				ticks: {
+					display: false,
+				},
+			},
+		},
+		plugins: {
+			legend: {
+				display: false,
+			},
+		},
+	};
+	const data = {
+		labels: [1, 2, 3, 4, 5, 6],
+		datasets: [
+			{
+				data: userStats.distribution,
+				backgroundColor: "rgba(66,113,62)",
+				borderWidth: 1,
+			},
+		],
+	};
+
 	return (
-		<div className="absolute inset-0 flex items-center justify-center bg-black/75">
-			<div className="h-[650px] w-[525px] rounded-lg bg-[#0e0f10] text-3xl">
+		<div className="absolute inset-0 flex items-center justify-center overflow-hidden bg-black/75	">
+			<motion.div
+				initial={{ y: "100vh", opacity: 0, scale: 1 }}
+				animate={{ y: 0, opacity: 1, scale: 1 }}
+				exit={{ y: "100vh", opacity: 0, transition: { duration: 0.3 } }}
+				className="h-[650px] w-[525px] rounded-lg bg-[#0e0f10] text-3xl"
+			>
 				<nav>
 					<IoMdClose
 						className="float-right mr-4 mt-4 hover:cursor-pointer"
@@ -65,14 +108,7 @@ export const StatCard: FC<StatProps> = ({
 						<p className="text-lg font-bold">Guess Distribution</p>
 					</div>
 					<hr></hr>
-					{userStats.distribution.map((_, index, userStats) => {
-						return (
-							<div className="text-base font-bold">
-								{index + 1}
-								{userStats[index]}
-							</div>
-						);
-					})}
+					<Bar options={options} data={data}></Bar>
 					<hr></hr>
 					<div className="flex flex-row items-center py-5 text-base font-normal">
 						{cookie.auth_token ? (
@@ -93,9 +129,8 @@ export const StatCard: FC<StatProps> = ({
 							</>
 						)}
 					</div>
-
 				</div>
-			</div>
+			</motion.div>
 		</div>
 	);
 };

@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import { useCookies } from "react-cookie";
 import { IoMdClose } from "react-icons/io";
+import { motion } from "framer-motion";
 
 interface props {
 	sidePanel: boolean;
@@ -17,8 +18,11 @@ export const SidePanel: FC<props> = ({ showSidePanel, showLogin }) => {
 	}
 
 	return (
-		<div
-			className="absolute h-[867px] w-96 border border-[#837A6C] hover:cursor-pointer"
+		<motion.div
+			initial={{ x: -100 }}
+			animate={{ x: 0, transition: { type: "tween", duration: 0.1 } }}
+			exit={{ x: -500, transition: { ease: "easeOut" } }}
+			className="absolute z-20 h-[867px] w-96 border border-[#837A6C] bg-[#0e0f10] hover:cursor-pointer"
 			onClick={() => {
 				showSidePanel(!SidePanel);
 			}}
@@ -37,7 +41,7 @@ export const SidePanel: FC<props> = ({ showSidePanel, showLogin }) => {
 						className="mb-3 h-10 w-80 rounded border border-[#303436]"
 						onClick={() => {
 							delete_cookie("auth_token");
-							window.localStorage.removeItem("userID")
+							window.localStorage.removeItem("userID");
 						}}
 					>
 						Logout
@@ -53,6 +57,6 @@ export const SidePanel: FC<props> = ({ showSidePanel, showLogin }) => {
 					</button>
 				)}
 			</div>
-		</div>
+		</motion.div>
 	);
 };
