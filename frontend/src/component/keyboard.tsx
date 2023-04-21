@@ -1,6 +1,5 @@
 import { FC, useCallback, useContext, useEffect } from "react";
 import { BoardContext } from "../App";
-import { currentGame } from "../util/types";
 import { Key } from "./key";
 
 interface KeyboardProps {}
@@ -14,7 +13,6 @@ let createRow = (row: string[]) => {
 				<Key
 					letter={letter}
 					nonLetter={false}
-					color={"bg-[#818384]"}
 				></Key>
 			</div>
 		);
@@ -22,7 +20,7 @@ let createRow = (row: string[]) => {
 };
 
 export const Keyboard: FC<KeyboardProps> = () => {
-	const { board, letterKey, enterKey, backKey, index, login, curGuess } =
+	const { letterKey, enterKey, backKey, index, login } =
 		useContext(BoardContext);
 	const r1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
 	const r2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L"];
@@ -43,7 +41,7 @@ export const Keyboard: FC<KeyboardProps> = () => {
 				letterKey(e.key.toUpperCase());
 			} else if (e.key === "Enter") {
 				enterKey();
-			} else if(e.key === "Backspace"){
+			} else if (e.key === "Backspace") {
 				backKey();
 			}
 		},
@@ -71,30 +69,13 @@ export const Keyboard: FC<KeyboardProps> = () => {
 				<Key
 					letter="Enter"
 					nonLetter={true}
-					color={"bg-[#818384]"}
 				></Key>
 				{item3}
 				<Key
 					letter="Back"
 					nonLetter={true}
-					color={"bg-[#818384]"}
 				></Key>
 			</div>
 		</div>
 	);
 };
-
-/**
- 	if (index.row > 0) {
-		for (let i = 0; i < 5; i++) {
-			const correct =
-				curGuess != "" &&
-				curGuess[i] === actualWord[i] &&
-				curGuess[i] == letter;
-			console.log(letter, correct, curGuess[i], actualWord[i]);
-			if (correct) {
-				setColor("bg-[#538D4E]");
-			}
-		}
-	}
- */

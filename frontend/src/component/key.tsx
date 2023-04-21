@@ -1,17 +1,14 @@
 import { FC, useContext } from "react";
 import { BoardContext } from "../App";
-import { currentGame } from "../util/types";
 
 interface KeyProp {
 	letter: string;
 	nonLetter: boolean;
-	color: string;
 }
 
-export const Key: FC<KeyProp> = ({ letter, nonLetter, color }) => {
-	const { board, index, enterKey, backKey, letterKey, curGuess } =
-		useContext(BoardContext);
-	
+export const Key: FC<KeyProp> = ({ letter, nonLetter }) => {
+	const { enterKey, backKey, letterKey } = useContext(BoardContext);
+
 	const setLetter = () => {
 		if (letter === "Enter") {
 			enterKey();
@@ -24,7 +21,7 @@ export const Key: FC<KeyProp> = ({ letter, nonLetter, color }) => {
 
 	return (
 		<div
-			className={`${color} m-1 rounded-sm text-lg font-semibold hover:cursor-pointer hover:bg-[#27281B]`}
+			className={`m-1 rounded-sm bg-[#818384] text-lg font-semibold hover:cursor-pointer hover:bg-[#27281B]`}
 			onClick={() => {
 				setLetter();
 			}}
