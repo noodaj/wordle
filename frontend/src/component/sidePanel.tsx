@@ -1,16 +1,44 @@
-import React, { FC } from "react";
+import { motion } from "framer-motion";
+import React, { FC, useContext } from "react";
 import { useCookies } from "react-cookie";
 import { IoMdClose } from "react-icons/io";
-import { motion } from "framer-motion";
+import { BoardContext } from "../App";
+import { boardGrid } from "../util/board";
+import { currentGame, userStats } from "../util/types";
 
 interface props {
 	sidePanel: boolean;
 	login: boolean;
+	curGuess: React.MutableRefObject<string | null>
+	setUserStats: React.MutableRefObject<userStats | null>
 	showSidePanel: React.Dispatch<React.SetStateAction<boolean>>;
 	showLogin: React.Dispatch<React.SetStateAction<boolean>>;
 }
-export const SidePanel: FC<props> = ({ showSidePanel, showLogin }) => {
+
+export const SidePanel: FC<props> = ({ showSidePanel, showLogin, curGuess, setUserStats }) => {
+	const { setBoard, setIndex } = useContext(BoardContext);
 	const [cookie] = useCookies(["auth_token"]);
+
+	const handleLogout = () => {
+		delete_cookie("auth_token");
+		window.localStorage.removeItem("userID");
+
+		const gameStats = window.localStorage.getItem("currentGame") as string;
+		const userStats = window.localStorage.getItem("userStats") as string;
+		const game: currentGame = JSON.parse(gameStats);
+		const stats: userStats = JSON.parse(userStats);
+
+		if (!game) {
+			setBoard(boardGrid);
+		} else {
+			setBoard(() => { return game.board});
+			setIndex(game.index);
+			curGuess.current = game.guess;
+		}
+		if (!stats) {
+			setUserStats.current = stats;
+		}
+	};
 
 	function delete_cookie(name: string) {
 		document.cookie =
@@ -39,10 +67,7 @@ export const SidePanel: FC<props> = ({ showSidePanel, showLogin }) => {
 				{cookie.auth_token ? (
 					<button
 						className="mb-3 h-10 w-80 rounded border border-[#303436]"
-						onClick={() => {
-							delete_cookie("auth_token");
-							window.localStorage.removeItem("userID");
-						}}
+						onClick={handleLogout}
 					>
 						Logout
 					</button>
