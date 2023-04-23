@@ -1,12 +1,13 @@
 import { BoardContext } from "../App";
 import { userStats } from "../util/types";
 import axios, { AxiosResponse } from "axios";
-import { FC, useContext, useRef, useState } from "react";
+import { FC, MutableRefObject, useContext, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { IoMdClose } from "react-icons/io";
 
 interface LoginProps {
 	userStats: userStats;
+	ref: MutableRefObject<string | null>;
 }
 
 interface res {
@@ -14,8 +15,8 @@ interface res {
 	userID: string;
 }
 
-export const Login: FC<LoginProps> = ({ userStats }) => {
-	const { login, showLogin } = useContext(BoardContext);
+export const Login: FC<LoginProps> = ({ userStats, ref }) => {
+	const { login, showLogin, board, index } = useContext(BoardContext);
 	const [_, setCookies] = useCookies(["auth_token"]);
 	const [newUser, showNewForm] = useState<boolean>(false);
 	const [error, setError] = useState<{ error: boolean; message: string }>();
@@ -53,11 +54,18 @@ export const Login: FC<LoginProps> = ({ userStats }) => {
 						winPercent: userStats.winPercent,
 						wins: userStats.wins,
 						distribution: userStats.distribution,
+						game: {
+							board: board,
+							index: index,
+							guess: ref.current,
+						},
 					}
 				);
 
 				setCookies("auth_token", res.data.token);
 				window.localStorage.setItem("userID", res.data.userID);
+				window.localStorage.removeItem("currentGame");
+				window.localStorage.removeItem("userStats");
 				showLogin(false);
 			} catch (err: any) {
 				setError({ error: true, message: err.response.data.message });
