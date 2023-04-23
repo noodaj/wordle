@@ -13,7 +13,6 @@ import { BoardContext } from "../App";
 import { userStats } from "../util/types";
 
 interface StatProps {
-	guessCount: number;
 	userStats: userStats;
 	stats: boolean;
 	showStats: React.Dispatch<React.SetStateAction<boolean>>;
@@ -22,7 +21,6 @@ interface StatProps {
 ChartJS.register(BarElement, LinearScale, CategoryScale);
 
 export const StatCard: FC<StatProps> = ({
-	guessCount,
 	userStats,
 	showStats,
 	stats,

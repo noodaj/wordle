@@ -143,7 +143,7 @@ export const InfoModal: FC<InfoProps> = ({ modalState, setModal }) => {
 											showLogin(true);
 										}}
 									>
-										Log In or create an account to see your
+										Log In or create an account to save your
 										stats.
 									</p>
 									<hr></hr>
