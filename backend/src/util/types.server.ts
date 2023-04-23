@@ -1,3 +1,9 @@
+interface curGame {
+	board: string[][];
+	index: { row: number; col: number };
+	curGuess: string;
+}
+
 //model for user
 export interface IUser {
 	username: string;
@@ -8,6 +14,7 @@ export interface IUser {
 	winPercent: number;
 	played: number;
 	distribution: number[];
+	game: curGame;
 }
 
 //model for updating userdata
@@ -20,6 +27,7 @@ export interface IUserData {
 		winPercent: number;
 		played: number;
 		distribution: number[];
+		game: curGame;
 	};
 }
 

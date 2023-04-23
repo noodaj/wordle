@@ -9,9 +9,17 @@ router.patch("/updateData", async (req: Request, res: Response) => {
 	//destructure
 	const {
 		userID,
-		stats: { curStreak, maxStreak, played, winPercent, wins, distribution },
+		stats: {
+			curStreak,
+			maxStreak,
+			played,
+			winPercent,
+			wins,
+			distribution,
+			game,
+		},
 	} = req.body[0] as IUserData;
-
+	
 	//try finding user and updating
 	//if user not found send error message
 	try {
@@ -25,6 +33,7 @@ router.patch("/updateData", async (req: Request, res: Response) => {
 					winPercent,
 					wins,
 					distribution,
+					game,
 				},
 			}
 		);
@@ -53,10 +62,11 @@ router.get("/getData", async (req: Request, res: Response) => {
 			winPercent: response.winPercent,
 			played: response.played,
 			distribution: response.distribution,
+			game: response.game,
 		});
 	} catch (err) {
-		console.log(err);
-		return res.status(400).json({ error: "userID not found", err });
+		console.log("userID not found");
+		return res.status(400).json({ error: "userID not found" });
 	}
 });
 
@@ -72,6 +82,7 @@ export const createUser = async ({
 	winPercent,
 	wins,
 	distribution,
+	game,
 }: IUser) => {
 	//hash password
 	const hashed = await bcrypt.hash(password, 10);
@@ -87,6 +98,7 @@ export const createUser = async ({
 		winPercent,
 		wins,
 		distribution,
+		game,
 	});
 
 	//return the user id

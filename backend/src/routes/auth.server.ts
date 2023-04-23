@@ -18,6 +18,7 @@ router.post("/register", async (req: Request, res: Response) => {
 		winPercent,
 		wins,
 		distribution,
+		game,
 	} = req.body as IUser;
 
 	//checking for valid username
@@ -37,7 +38,7 @@ router.post("/register", async (req: Request, res: Response) => {
 			.status(400)
 			.json({ message: "Please enter a valid password." });
 	}
-	
+
 	//create the new user from req.body
 	const newUser = await createUser({
 		username,
@@ -48,6 +49,7 @@ router.post("/register", async (req: Request, res: Response) => {
 		winPercent,
 		wins,
 		distribution,
+		game,
 	});
 
 	//error creating the user
