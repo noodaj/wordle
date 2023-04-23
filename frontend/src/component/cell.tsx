@@ -1,6 +1,7 @@
 import { FC, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { BoardContext } from "../App";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CellProps {
 	letter: string;
@@ -9,7 +10,8 @@ interface CellProps {
 }
 
 export const Cell: FC<CellProps> = ({ letter, r, c }) => {
-	const { board, index, actualWord } = useContext(BoardContext);
+	const { board, actualWord, index } = useContext(BoardContext);
+	const queryClient = useQueryClient();
 
 	const correctLetter = letter != "" && letter === actualWord[c];
 	const hasLetter = letter != "" && actualWord.includes(letter);

@@ -1,27 +1,24 @@
 import { FC, useCallback, useContext, useEffect } from "react";
 import { BoardContext } from "../App";
 import { Key } from "./key";
+import useKeyboard from "../util/useKeyboard";
 
-interface KeyboardProps {}
 
-let createRow = (row: string[]) => {
-	let c = 0;
-	return row.map((letter) => {
-		c += 1;
-		return (
-			<div className="flex flex-col" key={Math.random() * 50}>
-				<Key
-					letter={letter}
-					nonLetter={false}
-				></Key>
-			</div>
-		);
-	});
-};
 
-export const Keyboard: FC<KeyboardProps> = () => {
-	const { letterKey, enterKey, backKey, index, login } =
-		useContext(BoardContext);
+export const Keyboard: FC = () => {
+	let createRow = (row: string[]) => {
+		let c = 0;
+		return row.map((letter) => {
+			c += 1;
+			return (
+				<div className="flex flex-col" key={Math.random() * 50}>
+					<Key letter={letter} nonLetter={false}></Key>
+				</div>
+			);
+		});
+	};
+
+	const { index, login, letterKey, enterKey, backKey } = useContext(BoardContext);
 	const r1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
 	const r2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L"];
 	const r3 = ["Z", "X", "C", "V", "B", "N", "M"];
@@ -66,15 +63,9 @@ export const Keyboard: FC<KeyboardProps> = () => {
 			<div className="flex">{item1}</div>
 			<div className="flex">{item2}</div>
 			<div className="flex">
-				<Key
-					letter="Enter"
-					nonLetter={true}
-				></Key>
+				<Key letter="Enter" nonLetter={true} ></Key>
 				{item3}
-				<Key
-					letter="Back"
-					nonLetter={true}
-				></Key>
+				<Key letter="Back" nonLetter={true}></Key>
 			</div>
 		</div>
 	);
